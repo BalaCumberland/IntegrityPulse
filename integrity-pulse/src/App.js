@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { green, blueGrey, orange, grey, red } from '@mui/material/colors';
 import { Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -29,14 +29,14 @@ const projectSummary = [
   { name: "Project 2", thirdPartyLibraries: 8, vulnerabilities: 5, upToDate: 4, toBeUpdated: 6 },
 ];
 
-const primaryColor = blueGrey[800]; // Dark blue-grey, professional
-const secondaryColor = green[500]; // Green, suggesting efficiency and success
-const accentColor = orange[700]; // Orange, for attention and warnings
+const primaryColor = blueGrey[800];
+const secondaryColor = green[500];
+const accentColor = orange[700];
 const successColor = green[500];
 const failureColor = red[500];
 
 function App() {
-  const [menuOpen, setMenuOpen] = useState(true); // Sidebar is open by default
+  const [menuOpen, setMenuOpen] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [chartOpen, setChartOpen] = useState(false);
@@ -45,7 +45,7 @@ function App() {
   const [homeOpen, setHomeOpen] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
   const [hideSummary, setHideSummary] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate if using React Router
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedProject) {
@@ -64,9 +64,7 @@ function App() {
     setDetailsOpen(true);
     setChartOpen(false);
     setHideSummary(true);
-    setMenuOpen(false); // Close sidebar on project click
-    // If using React Router, you can navigate to a specific project route
-    // navigate(`/projects/${project.id}`);
+    setMenuOpen(false);
   };
 
   const handleHomeClick = () => {
@@ -74,7 +72,7 @@ function App() {
     setDetailsOpen(false);
     setChartOpen(false);
     setHideSummary(false);
-    setMenuOpen(false); // Close sidebar on home click
+    setMenuOpen(false);
   };
 
   return (
@@ -239,7 +237,16 @@ function App() {
           <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", background: grey[50], padding: "20px", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.3)" }}>
             <h3 style={{ textAlign: "center", color: grey[800] }}>Project Health</h3>
             <PieChart width={300} height={250}>
-              <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                innerRadius={40} // Added inner radius to create a donut effect
+                label
+              >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -247,6 +254,7 @@ function App() {
               <Tooltip />
               <Legend />
             </PieChart>
+
             <button onClick={() => setPopupOpen(false)} style={{ marginTop: "16px", padding: "10px 20px", cursor: "pointer", border: "none", backgroundColor: failureColor, color: grey[50], borderRadius: "4px", display: "block", margin: "0 auto" }}>Close</button>
           </div>
         )}
