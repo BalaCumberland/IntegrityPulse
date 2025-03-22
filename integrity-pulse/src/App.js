@@ -105,7 +105,7 @@ export default function App() {
                 </table>
                 <div style={{ marginTop: "20px", textAlign: "center" }}>
                 <button onClick={() => setPopupOpen(true)} style={{ position: "absolute", top: "20px", right: "20px", padding: "10px 20px", cursor: "pointer", border: "none", background: "#007bff", color: "white", borderRadius: "4px" }}>
-                    View Project Health
+                    View Project Healths
                   </button>
                 </div>
               </div>
