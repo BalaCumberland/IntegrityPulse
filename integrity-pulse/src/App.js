@@ -51,13 +51,14 @@ export default function App() {
   const handleProjectClick = (project) => {
     setSelectedProject(project);
     setProjectDetails(fetchProjectDetails(project.id));
+    setHomeOpen(!homeOpen);
     setDetailsOpen(true);
     setChartOpen(false);
     setHideSummary(true);
   };
 
   const handleHomeClick = () => {
-    setHomeOpen(homeOpen);
+    
     setSelectedProject(null);
     setDetailsOpen(false);
     setChartOpen(false);
@@ -66,29 +67,69 @@ export default function App() {
 
   return (
     <div style={{ display: "flex", height: "100vh", background: "#f0f2f5", color: "#333", position: "relative" }}>
-      <div style={{ position: "absolute", top: "10px", left: "50%", transform: "translateX(-50%)", fontSize: "32px", color: "#007bff", fontWeight: "bold" }}>
-        Integrity Pulse
-      </div>
-    <div style={{ display: "flex", height: "100vh", background: "#f0f2f5", color: "#333" }}>
-      <div style={{ background: "#222", color: "white", padding: "16px", width: menuOpen ? "220px" : "60px", transition: "width 0.3s ease-in-out", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <button onClick={() => setMenuOpen(!menuOpen)} style={{ marginBottom: "16px", background: "none", border: "none", color: "white", cursor: "pointer" }}>
-          <Menu size={24} />
-        </button>
-        <ul style={{ listStyle: "none", padding: 0, width: "100%" }}>
-          <li style={{ padding: "12px", cursor: "pointer", background: homeOpen ? "#555" : "transparent", textAlign: "center", borderRadius: "4px", marginBottom: "4px" }}
-              onClick={handleHomeClick}> {menuOpen ? "Home" : "🏠"} </li>
-          {homeOpen && (
-            <ul style={{ listStyle: "none", paddingLeft: "20px" }}>
-              {projects.map((project) => (
-                <li key={project.id} style={{ padding: "8px", cursor: "pointer", background: selectedProject?.id === project.id ? "#777" : "transparent", textAlign: "center", borderRadius: "4px", marginBottom: "4px" }}
-                    onClick={() => handleProjectClick(project)}>
-                  {menuOpen ? project.name : `P${project.id}`}
-                </li>
-              ))}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
+          <a className="navbar-brand" href="#">Integrity Pulse</a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <a className="nav-link active" aria-current="page" href="#" onClick={handleHomeClick}>Home</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#">About</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#">Contact</a>
+              </li>
             </ul>
-          )}
-        </ul>
-      </div>
+          </div>
+        </div>
+      </nav>
+
+    <style>
+        {`
+          body {
+              font-family: 'Arial', sans-serif;
+              background-color: #f7f7f7;
+              color: #333;
+              height: 100vh;
+              margin: 0;
+          }
+
+          .navbar {
+              background-color: #0044cc !important;
+          }
+
+          .navbar-brand {
+              color: white !important;
+              font-size: 24px;
+              font-weight: bold;
+          }
+
+          .navbar-nav .nav-link {
+              color: white !important;
+              font-size: 16px;
+              margin-right: 15px;
+          }
+
+          .navbar-nav .nav-link:hover {
+              color: #ffd700 !important;
+          }
+
+          .header-text {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 20vh;
+              text-align: center;
+              color: #0044cc;
+          }
+        `}
+      </style>
+    <div style={{ display: "flex", height: "100vh", background: "#f0f2f5", color: "#333" }}>
 
       <div style={{ flex: 1, padding: "20px" }}>
         {selectedProject && detailsOpen && (
@@ -127,7 +168,7 @@ export default function App() {
     
       </div>
       
-        {!hideSummary && homeOpen && (
+        {!detailsOpen && (
           <div style={{ position: "absolute", top: "20%", left: "50%", transform: "translate(-50%, -30%)", textAlign: "center" }}>
             <h2>Project Summary</h2>
             <table style={{ margin: "0 auto", borderCollapse: "collapse", border: "1px solid #ddd" }}>
