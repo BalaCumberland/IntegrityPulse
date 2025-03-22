@@ -22,6 +22,11 @@ const fetchProjectDetails = (projectId) => {
   };
 };
 
+const projectSummary = [
+  { name: "Project 1", thirdPartyLibraries: 5, vulnerabilities: 3, upToDate: 7, toBeUpdated: 2 },
+  { name: "Project 2", thirdPartyLibraries: 8, vulnerabilities: 5, upToDate: 4, toBeUpdated: 6 },
+];
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -29,8 +34,9 @@ export default function App() {
   const [chartOpen, setChartOpen] = useState(false);
   const [projectDetails, setProjectDetails] = useState(null);
   const [chartData, setChartData] = useState([]);
-  const [homeOpen, setHomeOpen] = useState(false);
+  const [homeOpen, setHomeOpen] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [hideSummary, setHideSummary] = useState(false);
 
   useEffect(() => {
     if (selectedProject) {
@@ -47,16 +53,22 @@ export default function App() {
     setProjectDetails(fetchProjectDetails(project.id));
     setDetailsOpen(true);
     setChartOpen(false);
+    setHideSummary(true);
   };
 
   const handleHomeClick = () => {
-    setHomeOpen(!homeOpen);
+    setHomeOpen(homeOpen);
     setSelectedProject(null);
     setDetailsOpen(false);
     setChartOpen(false);
+    setHideSummary(false);
   };
 
   return (
+    <div style={{ display: "flex", height: "100vh", background: "#f0f2f5", color: "#333", position: "relative" }}>
+      <div style={{ position: "absolute", top: "10px", left: "50%", transform: "translateX(-50%)", fontSize: "32px", color: "#007bff", fontWeight: "bold" }}>
+        Integrity Pulse
+      </div>
     <div style={{ display: "flex", height: "100vh", background: "#f0f2f5", color: "#333" }}>
       <div style={{ background: "#222", color: "white", padding: "16px", width: menuOpen ? "220px" : "60px", transition: "width 0.3s ease-in-out", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <button onClick={() => setMenuOpen(!menuOpen)} style={{ marginBottom: "16px", background: "none", border: "none", color: "white", cursor: "pointer" }}>
@@ -77,8 +89,8 @@ export default function App() {
           )}
         </ul>
       </div>
+
       <div style={{ flex: 1, padding: "20px" }}>
-        <h1 style={{ fontSize: "32px", color: "#007bff", textAlign: "center" }}>Integrity Pulse</h1>
         {selectedProject && detailsOpen && (
           <div style={{ marginTop: "20px" }}>
             <h2>{selectedProject.name}</h2>
@@ -112,7 +124,41 @@ export default function App() {
             )}
           </div>
         )}
+    
       </div>
+      
+        {!hideSummary && homeOpen && (
+          <div style={{ position: "absolute", top: "20%", left: "50%", transform: "translate(-50%, -30%)", textAlign: "center" }}>
+            <h2>Project Summary</h2>
+            <table style={{ margin: "0 auto", borderCollapse: "collapse", border: "1px solid #ddd" }}>
+              <thead>
+                <tr style={{ background: "#007bff", color: "white" }}>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Project Name</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Third-Party Libraries</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Vulnerabilities</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Up-to-date</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>To-be-Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projectSummary.map((project, index) => ( 
+                  <tr key={index}>
+                  <td>
+                    <a href={`#/project/${projects[index].id}`} style={{ textDecoration: "none", color: "#007bff" }} onClick={() => handleProjectClick(projects[index])}>
+                      {project.name}
+                    </a>
+                  </td>
+                    <td style={{ padding: "10px", textAlign: "left", border: "1px solid #ddd" }}>{project.thirdPartyLibraries}</td>
+                    <td style={{ padding: "10px", textAlign: "left", border: "1px solid #ddd" }}>{project.vulnerabilities}</td>
+                    <td style={{ padding: "10px", textAlign: "left", border: "1px solid #ddd" }}>{project.upToDate}</td>
+                    <td style={{ padding: "10px", textAlign: "left", border: "1px solid #ddd" }}>{project.toBeUpdated}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
       {popupOpen && (
         <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", background: "white", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.3)" }}>
           <h3 style={{ textAlign: "center" }}>Project Health</h3>
@@ -128,6 +174,8 @@ export default function App() {
           <button onClick={() => setPopupOpen(false)} style={{ marginTop: "16px", padding: "10px 20px", cursor: "pointer", border: "none", background: "#ff4d4f", color: "white", borderRadius: "4px", display: "block", margin: "0 auto" }}>Close</button>
         </div>
       )}
+    </div>
+
     </div>
   );
 }
