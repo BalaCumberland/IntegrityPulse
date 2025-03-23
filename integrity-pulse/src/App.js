@@ -55,6 +55,7 @@ function App() {
   const [hideSummary, setHideSummary] = useState(false);
   const [projectSummary, setProjectSummary] = useState([]);
 
+
   useEffect(() => {
     const fetchProjectSummary = async () => {
       try {
@@ -119,7 +120,7 @@ function App() {
       const data = await response.json();
 
       setProjectDetails(data.dependency);
-      setChartData(data.dasgboard);
+      setChartData(data.dasgboard[project]);
     } catch (error) {
       console.error("Error fetching project details:", error);
     }
@@ -334,7 +335,7 @@ function App() {
           </div>
         )}
 
-          {popupOpen && chartData && (
+          {popupOpen &&  (
           <div
             style={{
               position: "fixed",
