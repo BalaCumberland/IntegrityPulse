@@ -3,10 +3,6 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recha
 import { green, blueGrey, orange, grey, red } from '@mui/material/colors';
 import { Menu } from 'lucide-react';
 
-const projects = [
-  { id: 1, name: "Project 1", status: "✅ Passed", lastRun: "March 15, 2025" },
-  { id: 2, name: "Project 2", status: "❌ Failed", lastRun: "March 16, 2025" },
-];
 
 const primaryColor = blueGrey[800];
 const secondaryColor = green[500];
@@ -53,7 +49,7 @@ function App() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [chartOpen, setChartOpen] = useState(false);
   const [projectDetails, setProjectDetails] = useState(null);
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState();
   const [homeOpen, setHomeOpen] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
   const [hideSummary, setHideSummary] = useState(false);
@@ -82,15 +78,32 @@ function App() {
     fetchProjectSummary();
   }, []);
 
+    useEffect(() => {
+      if (selectedProject && projectSummary.length > 0) {
+        const projectData = projectSummary.find(proj => proj.name === selectedProject);
+        console.log("Selected Project:", selectedProject);
+        if (projectData) {
+          setChartData([
+            { name: "Vulnerabilities", value: projectData.vulnerabilities || 0, color: failureColor },
+            { name: "Up-to-date", value: projectData.upToDate || 0, color: successColor },
+            { name: "To-be-Updated", value: projectData.toBeUpdated || 0, color: accentColor },
+          ]);
+        }
+      }
+    }, [selectedProject, projectSummary]);
+  
+
+
   useEffect(() => {
-    if (selectedProject) {
+    if (projectSummary) {
       setChartData([
-        { name: "Vulnerabilities", value: 30, color: failureColor },
-        { name: "Up-to-date", value: 50, color: successColor },
-        { name: "To-be-Updated", value: 20, color: accentColor },
+        { name: "Vulnerabilities", value: projectSummary.vulnerable, color: failureColor },
+        { name: "Up-to-date", value: projectSummary.new, color: successColor },
+        { name: "To-be-Updated", value: projectSummary.old, color: accentColor },
       ]);
     }
-  }, [selectedProject]);
+  }, [projectSummary]);
+
 
   const handleProjectClick = async (project) => {
     setSelectedProject(project);
@@ -105,27 +118,14 @@ function App() {
       const response = await fetch(`http://35.164.192.237:9090/dBoard/project?projectName=${project}`);
       const data = await response.json();
 
-      const formattedData = Object.values(data.dependencies || []).map(dep => ({
-        releasedDate: dep.releasedDate || "N/A",
-        lib: dep.lib || "N/A",
-        dependency: dep.dependency || "N/A",
-        groupId: dep.groupId || "N/A",
-        project: dep.project || project.name,
-        description: dep.description || "N/A",
-        new_version: dep.new_version || "N/A",
-        new_release_date: dep.new_release_date || "N/A",
-        version: dep.version || "N/A",
-        url: dep.url || "#",
-        isVulnerable: dep.isVulnerable || false,
-        depId: dep.depId || "N/A",
-        artifactId: dep.artifactId || "N/A",
-      }));
-
-      setProjectDetails(data);
+      setProjectDetails(data.dependency);
+      setChartData(data.dasgboard);
     } catch (error) {
       console.error("Error fetching project details:", error);
     }
   };
+
+
 
   const handleHomeClick = () => {
     setSelectedProject(null);
@@ -334,33 +334,64 @@ function App() {
           </div>
         )}
 
-        {popupOpen && (
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", background: grey[50], padding: "30px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
-            <h3 style={{ textAlign: "center", color: primaryColor, marginBottom: '20px' }}>Project Health</h3>
-            <ResponsiveContainer width={300} height={250}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  innerRadius={40}
-                  label
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          {popupOpen && chartData && (
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: grey[50],
+              padding: "30px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+            }}
+          >
+            <h3 style={{ textAlign: "center", color: primaryColor, marginBottom: '20px' }}>
+              Project Health
+            </h3>
 
-            <button onClick={() => setPopupOpen(false)} style={{ marginTop: "24px", padding: "12px 24px", cursor: "pointer", border: "none", backgroundColor: failureColor, color: grey[50], borderRadius: "6px", display: "block", margin: "0 auto", fontSize: '16px', fontWeight: 'medium', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>Close</button>
+            <PieChart width={250} height={200}>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={60}
+                innerRadius={30}
+                label
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+
+            <button
+              onClick={() => setPopupOpen(false)}
+              style={{
+                marginTop: "24px",
+                padding: "12px 24px",
+                cursor: "pointer",
+                border: "none",
+                backgroundColor: failureColor,
+                color: grey[50],
+                borderRadius: "6px",
+                display: "block",
+                margin: "0 auto",
+                fontSize: '16px',
+                fontWeight: 'medium',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+              }}
+            >
+              Close
+            </button>
           </div>
         )}
+
       </main>
     </div>
   );
