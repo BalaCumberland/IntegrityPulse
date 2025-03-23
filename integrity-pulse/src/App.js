@@ -64,7 +64,7 @@ function App() {
 
         const formattedData = Object.values(data).map(project => ({
           name: project.project,
-          thirdPartyLibraries: project.new + project.old + project.vulnerable,
+          thirdPartyLibraries: project.vulnerable,
           vulnerabilities: project.vulnerable,
           upToDate: project.new,
           toBeUpdated: project.old,
@@ -286,39 +286,50 @@ function App() {
                   <table style={commonTableStyles}>
                     <thead>
                       <tr style={commonTableHeaderRowStyle}>
-                        <th style={commonTableHeaderCellStyle}>Released Date</th>
-                        <th style={commonTableHeaderCellStyle}>Library</th>
-                        <th style={commonTableHeaderCellStyle}>Dependency</th>
-                        <th style={commonTableHeaderCellStyle}>Group ID</th>
                         <th style={commonTableHeaderCellStyle}>Project</th>
+
+                        <th style={commonTableHeaderCellStyle}>Library</th>
+                        <th style={commonTableHeaderCellStyle}>Artifact ID</th>
+                        <th style={commonTableHeaderCellStyle}>Group ID</th>
+
                         <th style={commonTableHeaderCellStyle}>Description</th>
+                        <th style={commonTableHeaderCellStyle}>Version</th>
+                        <th style={commonTableHeaderCellStyle}>Released Date</th>
                         <th style={commonTableHeaderCellStyle}>New Version</th>
                         <th style={commonTableHeaderCellStyle}>New Release Date</th>
-                        <th style={commonTableHeaderCellStyle}>Version</th>
-                        <th style={commonTableHeaderCellStyle}>URL</th>
+                        
                         <th style={commonTableHeaderCellStyle}>Vulnerable</th>
-                        <th style={commonTableHeaderCellStyle}>Artifact ID</th>
+                        <th style={commonTableHeaderCellStyle}>URL</th>
+                       
+                     
                       </tr>
                     </thead>
                     <tbody>
                       {projectDetails.map((item, index) => (
                         <tr key={item.depId || item.lib || index} style={{ backgroundColor: index % 2 === 0 ? grey[50] : grey[100] }}>
-                          <td style={commonTableCellStyle}>{item.releasedDate}</td>
-                          <td style={commonTableCellStyle}>{item.lib}</td>
-                          <td style={commonTableCellStyle}>{item.dependency}</td>
-                          <td style={commonTableCellStyle}>{item.groupId}</td>
                           <td style={commonTableCellStyle}>{item.project}</td>
+
+                          <td style={commonTableCellStyle}>{item.dependency}</td>
+                          <td style={commonTableCellStyle}>{item.artifactId}</td>
+                          <td style={commonTableCellStyle}>{item.groupId}</td>
+
                           <td style={commonTableCellStyle}>{item.description}</td>
-                          <td style={commonTableCellStyle}>{item.new_version}</td>
-                          <td style={commonTableCellStyle}>{item.new_release_date}</td>
                           <td style={commonTableCellStyle}>{item.version}</td>
-                          <td style={commonTableCellStyle}>
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: secondaryColor, textDecoration: 'underline' }}>Link</a>
-                          </td>
+                          <td style={commonTableCellStyle}>{item.releasedDate}</td>
+                          <td style={commonTableCellStyle}>{item.new_version}</td>
+                         
+                      
+                     
+                    
+                          <td style={commonTableCellStyle}>{item.new_release_date}</td>
                           <td style={item.isVulnerable ? vulnerableCellStyle : commonTableCellStyle}>
                             {item.isVulnerable ? "Yes" : "No"}
                           </td>
-                          <td style={commonTableCellStyle}>{item.artifactId}</td>
+                          <td style={commonTableCellStyle}>
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: secondaryColor, textDecoration: 'underline' }}>Link</a>
+                          </td>
+                       
+                          
                         </tr>
                       ))}
                     </tbody>
